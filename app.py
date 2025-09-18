@@ -1,5 +1,6 @@
 import os
 import random
+import uuid
 import streamlit as st
 import bcrypt
 from sqlalchemy import create_engine, text
@@ -63,7 +64,6 @@ def authenticate_user(username, password):
 # ====== Sidebar: Đăng nhập / Đăng ký ======
 if "user" not in st.session_state:
     st.session_state.user = None
-
 st.sidebar.markdown("## 👤 Tài khoản")
 
 if st.session_state.user is None:
@@ -130,25 +130,40 @@ else:
         f"<p style='text-align:center; font-weight:bold;'>{st.session_state.user['username']}</p>",
         unsafe_allow_html=True
     )
-    # === Nút đổi avatar ===
+
+    # === Nút đổi avatar: luôn hiển thị, không dùng session_state.show_change_avatar
     with st.sidebar.expander("🖼️ Đổi avatar"):
-        new_avatar_file = st.file_uploader("Chọn ảnh mới", type=["png", "jpg", "jpeg"], key="new_avatar")
+        new_avatar_file = st.file_uploader(
+            "Chọn ảnh mới", type=["png", "jpg", "jpeg"], key="new_avatar"
+        )
+
         if new_avatar_file and st.button("Cập nhật avatar"):
-            # Tên file trên Supabase
-            file_name = f"{st.session_state.user.username}_{new_avatar_file.name}"
-            supabase.storage.from_("avatars").upload(
+            username = st.session_state.user["username"]
+            ext = new_avatar_file.name.split(".")[-1].lower()
+
+            # 🔑 Tạo tên file duy nhất để không bao giờ trùng
+            unique_id = uuid.uuid4().hex
+            file_name = f"{username}_avatar_{unique_id}.{ext}"
+
+            bucket = supabase.storage.from_("avatars")
+
+            # Upload trực tiếp – không cần xóa
+            bucket.upload(
                 file_name,
                 new_avatar_file.getvalue(),
                 {"content-type": new_avatar_file.type}
             )
-            new_avatar_url = supabase.storage.from_("avatars").get_public_url(file_name)
 
-            # Sau khi upload ảnh và update DB
+            # Lấy URL public
+            new_avatar_url = bucket.get_public_url(file_name)
+
+            # Cập nhật DB và session
             with engine.begin() as conn:
                 conn.execute(
                     text("UPDATE users SET avatar=:a WHERE id=:id"),
                     {"a": new_avatar_url, "id": st.session_state.user["id"]}
                 )
+
             st.session_state.user["avatar"] = new_avatar_url
             st.success("✅ Avatar đã được cập nhật!")
             st.rerun()
