@@ -12,8 +12,6 @@ psycopg2-binary
 datasets
 accelerate
 transformers[torch]
-<<<<<<< HEAD
 bcrypt
 supabase
-=======
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
+
