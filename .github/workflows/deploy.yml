@@ -1,0 +1,31 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches: [ main ]   # Nếu repo của bạn dùng branch master thì đổi thành: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Push to Hugging Face Space
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Clone Hugging Face Space repo
+          git clone https://chuong-pqag:$HF_TOKEN@huggingface.co/spaces/chuong-pqag/recipe-ai-app space
+
+          # Copy toàn bộ code từ GitHub sang Hugging Face Space
+          rsync -av --delete --exclude '.git' ./ space/
+
+          cd space
+          git add .
+          git commit -m "Update from GitHub" || echo "No changes to commit"
+          git push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
