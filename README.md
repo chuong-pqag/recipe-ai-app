@@ -15,18 +15,18 @@ Xây dựng bằng **Streamlit + Supabase (PostgreSQL + pgvector) + SentenceTran
 
 ---
 
-<<<<<<< HEAD
+
 ## 🚀 Tính năng
 =======
 ## 🧠 Tính năng
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
+
 - Người dùng nhập nguyên liệu (ví dụ: *thịt gà, hành, tỏi*).  
 - Hệ thống sinh **embedding** cho nguyên liệu nhập vào.  
 - Truy vấn **pgvector** trong Supabase để tìm các món ăn có nguyên liệu gần nhất.  
 - Hiển thị: tên món, ảnh, video hướng dẫn, link tham khảo, nguyên liệu, cách làm.  
 
 ---
-<<<<<<< HEAD
+
 ## Demo
 https://recipe-ai-app-v1.streamlit.app/
 ---
@@ -38,39 +38,33 @@ https://recipe-ai-app-v1.streamlit.app/
 ---
 
 ## 🗜 Cấu trúc dự án
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
+
 
 ```text
 recipe-ai-app/
 │
 ├── data/
 │   └── nguyen_lieu_sach2.csv   # dữ liệu gốc
-<<<<<<< HEAD
 ├── app.py                      # Giao diện Streamlit
 =======
 │   └── Food_Banner.jpg.csv     # Ảnh banner
 ├── my_recipe_model/            # Kết quả model sau khi huấn luyện
 ├── app.py                      # Giao diện Streamlit
 ├── fine_tune_model.py          # Huấn luyện model AI
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 ├── recommender.py              # Hàm gợi ý từ pgvector
 ├── database_setup.py           # Tạo bảng & nạp dữ liệu vào Supabase
 ├── data_processor.py           # Xử lý dữ liệu + sinh embedding
 ├── requirements.txt            # Thư viện cần thiết
-<<<<<<< HEAD
 ├── .env.example                # chỉ dùng khi chạy local
 ├── .streamlit/                 # chỉ dùng khi deploy
 │   └── secrets.toml
 └── README.md                   # Tài liệu này
-
-=======
 ├── .env.example                # Mẫu .env chỉ dùng khi chạy local
 ├── .streamlit/                 # chỉ dùng khi deploy
 │   └── secrets.toml            # Deloy lên Streamlit Clould
 │   └── config.toml             # Deloy lên Render    
 └── README.md                   # Tài liệu này
 ```
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 ---
 
 ## ⚙️ Cài đặt & chạy local
@@ -174,6 +168,5 @@ streamlit run app.py
 ## 📜 About
 - Giáo viên hướng dẫn: Nguyễn Quốc Anh
 - Sinh vin thực hiện:  Lâm Đạo Chương và Trần Thị Diễm Tâm
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 
 MIT License © 2025
