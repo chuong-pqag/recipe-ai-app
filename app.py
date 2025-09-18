@@ -1,7 +1,6 @@
 import os
 import random
 import streamlit as st
-<<<<<<< HEAD
 import bcrypt
 from sqlalchemy import create_engine, text
 from sentence_transformers import SentenceTransformer
@@ -14,18 +13,6 @@ GUEST_AVATAR_URL = "https://cyfekkruuahcrbalwhiq.supabase.co/storage/v1/object/p
 
 # Load biến môi trường (DB_URL)
 DB_URL = st.secrets.get("DB_URL", None)
-=======
-from sqlalchemy import create_engine, text
-from sentence_transformers import SentenceTransformer
-from dotenv import load_dotenv
-
-# Load biến môi trường
-# Thử load từ st.secrets (deploy trên Cloud)
-st.set_page_config(page_title="AI Gợi ý món ăn", page_icon="🍲", layout="wide")
-DB_URL = st.secrets.get("DB_URL", None)
-
-# Nếu không có (local) thì load từ .env
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 if not DB_URL:
     load_dotenv()
     DB_URL = os.getenv("DB_URL") or os.getenv("DATABASE_URL")
@@ -37,22 +24,15 @@ if not DB_URL:
 # Kết nối DB
 @st.cache_resource
 def get_engine():
-<<<<<<< HEAD
-=======
-    # Giới hạn số connection trong pool để không vượt quá của Supabase (thường = 5)
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
     return create_engine(DB_URL, pool_size=5, max_overflow=0)
 
 engine = get_engine()
 
-<<<<<<< HEAD
 # Kết nối Supabase Storage
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-=======
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 # Load model embedding
 @st.cache_resource
 def load_model():
@@ -60,7 +40,6 @@ def load_model():
 
 model = load_model()
 
-<<<<<<< HEAD
 # ====== Xử lý tài khoản ======
 def create_user(username, password, email, avatar_url=None):
     hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -178,10 +157,6 @@ else:
         st.rerun()
 
 # ====== Các hàm gợi ý món ăn ======
-=======
-
-# Hàm gợi ý món ăn theo embedding nguyên liệu
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 def get_recommendations(ingredient_query, top_k=5):
     query_embedding = model.encode(ingredient_query).tolist()
     with engine.connect() as conn:
@@ -197,10 +172,6 @@ def get_recommendations(ingredient_query, top_k=5):
         )
         return result.fetchall()
 
-<<<<<<< HEAD
-=======
-# Hàm gợi ý món ăn theo embedding tên món ăn
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 def get_recommendations_by_name(name_query, top_k=5):
     query_embedding = model.encode(name_query).tolist()
     with engine.connect() as conn:
@@ -216,24 +187,10 @@ def get_recommendations_by_name(name_query, top_k=5):
         )
         return result.fetchall()
 
-<<<<<<< HEAD
 def get_random_recipes(top_k=5):
     with engine.connect() as conn:
         max_id = conn.execute(text("SELECT MAX(id) FROM recipes")).scalar()
         random_ids = [random.randint(1, max_id) for _ in range(top_k)]
-=======
-
-# Hàm lấy ngẫu nhiên món ăn
-def get_random_recipes(top_k=5):
-    with engine.connect() as conn:
-        # Lấy MAX(id) để biết giới hạn
-        max_id = conn.execute(text("SELECT MAX(id) FROM recipes")).scalar()
-
-        # Sinh ra ngẫu nhiên top_k id
-        random_ids = [random.randint(1, max_id) for _ in range(top_k)]
-
-        # Query theo id
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
         result = conn.execute(
             text("""
                 SELECT id, ten_mon, anh, video, url, nguyen_lieu, cach_lam, 1 AS similarity
@@ -244,7 +201,6 @@ def get_random_recipes(top_k=5):
         )
         return result.fetchall()
 
-<<<<<<< HEAD
 # ====== Giao diện chính ======
 st.image("data/Food_Banner_1.jpg", width="stretch")
 
@@ -254,51 +210,17 @@ search_mode = st.sidebar.radio("Bạn muốn tìm món ăn theo?", ["Nguyên li�
 st.title("🍲 Gợi ý nấu ăn bằng AI")
 st.write("Khám phá món ăn phù hợp bằng cách sử dụng AI và tìm tương đồng vector!")
 
-=======
-
-# 🚀 Cấu hình giao diện
-#st.set_page_config(page_title="AI Gợi ý món ăn", page_icon="🍲", layout="wide")
-
-# === Banner đầu trang ===
-st.image("data/Food_Banner_1.jpg", width="stretch")
-
-# Sidebar
-st.sidebar.title("🍴 Sở thích của bạn")
-search_mode = st.sidebar.radio("Bạn muốn tìm món ăn theo?", ["Nguyên liệu", "Tên món"])
-
-# Main title
-st.title("🍲 Gợi ý nấu ăn bằng AI")
-st.write("Khám phá món ăn phù hợp bằng cách sử dụng AI và tìm tương đồng vector!")
-
-# === Khu vực tìm kiếm ===
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 st.markdown(
     "<h2 style='color:#27AE60; font-size:28px; font-weight:bold; margin-bottom:15px;'>🔍 Tìm kiếm món ăn</h2>",
     unsafe_allow_html=True
 )
 
-<<<<<<< HEAD
 col_input1, col_input2 = st.columns([1, 3])
 with col_input1:
     if search_mode == "Nguyên liệu":
         st.markdown("<p style='text-align:right; font-size:20px; font-weight:bold;'>Nhập nguyên liệu bạn đang có:</p>", unsafe_allow_html=True)
     else:
         st.markdown("<p style='text-align:right; font-size:20px; font-weight:bold;'>Nhập tên món ăn bạn cần tìm:</p>", unsafe_allow_html=True)
-=======
-# Dòng nhập tìm kiếm
-col_input1, col_input2 = st.columns([1, 3])
-with col_input1:
-    if search_mode == "Nguyên liệu":
-        st.markdown(
-            "<p style='text-align:right; font-size:20px; font-weight:bold;'>Nhập nguyên liệu bạn đang có:</p>",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            "<p style='text-align:right; font-size:20px; font-weight:bold;'>Nhập tên món ăn bạn cần tìm:</p>",
-            unsafe_allow_html=True
-        )
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 
 with col_input2:
     if search_mode == "Nguyên liệu":
@@ -306,26 +228,12 @@ with col_input2:
     else:
         query = st.text_input("", placeholder="Ví dụ: phở bò, gỏi cuốn, bún chả", label_visibility="collapsed")
 
-<<<<<<< HEAD
 col_slider1, col_slider2 = st.columns([1, 3])
 with col_slider1:
     st.markdown("<p style='text-align:right; font-weight:bold;'>Số lượng món ăn bạn muốn gợi ý:</p>", unsafe_allow_html=True)
 
 with col_slider2:
     top_k = st.slider("", 3, 10, 5, label_visibility="collapsed")
-=======
-# Dòng slider + nút gợi ý (nút nằm dưới slider cùng cột)
-col_slider1, col_slider2 = st.columns([1, 3])
-with col_slider1:
-    st.markdown(
-        "<p style='text-align:right; font-weight:bold;'>Số lượng món ăn bạn muốn gợi ý:</p>",
-        unsafe_allow_html=True
-    )
-with col_slider2:
-    top_k = st.slider("", 3, 10, 5, label_visibility="collapsed")
-
-    # Nút nằm ngay dưới slider
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
     if st.button("🔍 Gợi ý món ăn"):
         if query.strip() == "":
             st.warning("⚠️ Vui lòng nhập ít nhất 1 nguyên liệu hoặc tên món.")
@@ -335,7 +243,6 @@ with col_slider2:
             else:
                 st.session_state.results = get_recommendations_by_name(query, top_k=top_k)
 
-<<<<<<< HEAD
 col1, col2 = st.columns([3, 1])
 
 with col1:
@@ -343,21 +250,6 @@ with col1:
 
     if "results" in st.session_state and st.session_state.results:
         st.markdown("<h2 style='color:#27AE60; font-size:28px; font-weight:bold;'>🍽️ Món ăn gợi ý cho bạn</h2>", unsafe_allow_html=True)
-=======
-# Chia layout main
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    # Luôn load 5 món ăn hàng ngày (ngẫu nhiên)
-    daily_recipes = get_random_recipes(top_k=5)
-
-    # Hiển thị kết quả tìm kiếm nếu có
-    if "results" in st.session_state and st.session_state.results:
-        st.markdown(
-            "<h2 style='color:#27AE60; font-size:28px; font-weight:bold;'>🍽️ Món ăn gợi ý cho bạn</h2>",
-            unsafe_allow_html=True
-        )
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
         for row in st.session_state.results:
             with st.container():
                 st.subheader(f"{row.ten_mon}  (⭐ {row.similarity:.2f})")
@@ -377,17 +269,8 @@ with col1:
 
                 st.markdown("---")
 
-<<<<<<< HEAD
     if daily_recipes:
         st.markdown("<h2 style='color:#27AE60; font-size:28px; font-weight:bold;'>🍴 Món ăn ngày mới dành cho bạn</h2>", unsafe_allow_html=True)
-=======
-    # Luôn hiển thị 5 món ăn hàng ngày
-    if daily_recipes:
-        st.markdown(
-            "<h2 style='color:#27AE60; font-size:28px; font-weight:bold;'>🍴 Món ăn ngày mới dành cho bạn</h2>",
-            unsafe_allow_html=True
-        )
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
         for row in daily_recipes:
             with st.container():
                 st.subheader(row.ten_mon)
@@ -409,29 +292,15 @@ with col1:
 
 with col2:
     st.markdown("### 💡 Mẹo")
-<<<<<<< HEAD
     st.info("""
-=======
-    st.info(
-        """
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
         - Cụ thể với nguyên liệu bạn có  
         - Kết hợp nhiều cách chế biến  
         - Thử phong cách mới  
         - Tìm món ngẫu nhiên để lấy cảm hứng  
         - Có thể tìm theo tên món trực tiếp
-<<<<<<< HEAD
         """)
-=======
-        """
-    )
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
 
     st.markdown("### 📊 Thống kê cơ sở dữ liệu")
     st.metric("Món ăn có sẵn", "2400+")
     st.metric("Kết hợp nguyên liệu", "∞")
-<<<<<<< HEAD
     st.metric("Độ chính xác AI", "90%+")
-=======
-    st.metric("Độ chính xác AI", "95%+")
->>>>>>> e035a27e8418aa3c57b973fdc6c67abc1cd5bb51
